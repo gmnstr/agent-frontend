@@ -31,14 +31,88 @@ const getInitialMode = (): ColorMode => {
   return prefersDarkMode() ? 'dark' : 'light'
 }
 
+const brandFontStack = "'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
+const monoFontStack = "'JetBrains Mono', 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace"
+
 const createTheme = (mode: ColorMode): Theme => {
   const base = mode === 'dark' ? webDarkTheme : webLightTheme
+  const isDark = mode === 'dark'
+
+  const common: Partial<Theme> = {
+    fontFamilyBase: brandFontStack,
+    fontFamilyNumeric: brandFontStack,
+    fontFamilyMonospace: monoFontStack,
+    borderRadiusSmall: '6px',
+    borderRadiusMedium: '6px',
+    borderRadiusLarge: '6px',
+    shadow2: '0 1px 3px rgba(0,0,0,0.12)',
+    shadow4: '0 4px 12px rgba(0,0,0,0.15)',
+    shadow8: '0 8px 24px rgba(0,0,0,0.20)',
+    shadow16: '0 8px 24px rgba(0,0,0,0.20)',
+  }
+
+  if (isDark) {
+    return {
+      ...base,
+      ...common,
+      colorNeutralBackground1: '#0D1117',
+      colorNeutralBackground2: '#161B22',
+      colorNeutralBackground3: '#21262D',
+      colorNeutralBackground4: '#1C2128',
+      colorNeutralForeground1: '#F0F6FC',
+      colorNeutralForeground2: '#C9D1D9',
+      colorNeutralForeground3: '#8B949E',
+      colorNeutralForeground4: '#6E7681',
+      colorNeutralForegroundDisabled: '#4C525A',
+      colorNeutralStroke1: '#30363D',
+      colorNeutralStroke2: '#21262D',
+      colorNeutralStrokeAccessible: '#58A6FF',
+      colorBrandBackground: '#58A6FF',
+      colorBrandBackgroundHover: '#79C0FF',
+      colorBrandBackgroundPressed: '#1F6FEB',
+      colorBrandBackgroundSelected: '#58A6FF',
+      colorBrandForeground1: '#58A6FF',
+      colorBrandForeground2: '#79C0FF',
+      colorBrandForegroundLink: '#58A6FF',
+      colorBrandForegroundLinkHover: '#79C0FF',
+      colorBrandForegroundOnLight: '#0D1117',
+      colorBrandForegroundInverted: '#0D1117',
+      colorPaletteGreenForeground2: '#3FB950',
+      colorPaletteYellowForeground2: '#D29922',
+      colorPaletteRedForeground2: '#F85149',
+      colorPalettePurpleForeground2: '#BC8CFF',
+    }
+  }
 
   return {
     ...base,
-    colorNeutralBackground1: mode === 'dark' ? '#101017' : '#f5f6fb',
-    colorNeutralBackground2: mode === 'dark' ? '#13131d' : '#ffffff',
-    colorNeutralBackground3: mode === 'dark' ? '#1b1b29' : '#edeff6',
+    ...common,
+    colorNeutralBackground1: '#F6F8FA',
+    colorNeutralBackground2: '#FFFFFF',
+    colorNeutralBackground3: '#EAEFF5',
+    colorNeutralBackground4: '#D0D7DE',
+    colorNeutralForeground1: '#0D1117',
+    colorNeutralForeground2: '#4B5563',
+    colorNeutralForeground3: '#6B7280',
+    colorNeutralForeground4: '#9CA3AF',
+    colorNeutralForegroundDisabled: '#A0AEC0',
+    colorNeutralStroke1: '#D0D7DE',
+    colorNeutralStroke2: '#E2E8F0',
+    colorNeutralStrokeAccessible: '#1F6FEB',
+    colorBrandBackground: '#1F6FEB',
+    colorBrandBackgroundHover: '#316DCA',
+    colorBrandBackgroundPressed: '#1B4F9C',
+    colorBrandBackgroundSelected: '#316DCA',
+    colorBrandForeground1: '#1F6FEB',
+    colorBrandForeground2: '#316DCA',
+    colorBrandForegroundLink: '#1F6FEB',
+    colorBrandForegroundLinkHover: '#316DCA',
+    colorBrandForegroundOnLight: '#FFFFFF',
+    colorBrandForegroundInverted: '#FFFFFF',
+    colorPaletteGreenForeground2: '#238636',
+    colorPaletteYellowForeground2: '#B08800',
+    colorPaletteRedForeground2: '#D93025',
+    colorPalettePurpleForeground2: '#6F42C1',
   }
 }
 

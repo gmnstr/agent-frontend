@@ -33,19 +33,98 @@ const useStyles = makeStyles({
     minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: '1.5rem',
+  },
+  summaryCard: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(12rem, 1fr))',
+    gap: '1rem',
+    ...shorthands.padding('1.25rem', '1.5rem'),
+    borderRadius: '0.75rem',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+    boxShadow: tokens.shadow2,
+  },
+  summaryStat: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.35rem',
+  },
+  summaryLabel: {
+    fontSize: '0.75rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    color: tokens.colorNeutralForeground3,
+  },
+  summaryValue: {
+    fontSize: '1.75rem',
+    fontWeight: 600,
+    color: tokens.colorNeutralForeground1,
+  },
+  summaryDiff: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.6rem',
+    fontSize: '0.875rem',
+    color: tokens.colorNeutralForeground2,
+    fontFamily: tokens.fontFamilyMonospace,
+  },
+  statusGroup: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+  },
+  statusPill: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.45rem',
+    ...shorthands.padding('0.35rem', '0.6rem'),
+    borderRadius: '999px',
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorNeutralForeground2,
+    fontSize: '0.75rem',
+    fontWeight: 500,
+  },
+  statusDot: {
+    width: '0.5rem',
+    height: '0.5rem',
+    borderRadius: tokens.borderRadiusCircular,
   },
   gridWrapper: {
     flex: 1,
     minHeight: 0,
-    borderRadius: tokens.borderRadiusLarge,
-    border: `1px solid ${tokens.colorNeutralStroke2}`,
-    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: '0.75rem',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground2,
     overflow: 'hidden',
     position: 'relative',
+    boxShadow: tokens.shadow4,
   },
   grid: {
     height: '100%',
+    backgroundColor: 'transparent',
+  },
+  headerRow: {
+    backgroundColor: tokens.colorNeutralBackground3,
+  },
+  headerCell: {
+    color: tokens.colorNeutralForeground3,
+    fontWeight: 600,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase',
+    fontSize: '0.75rem',
+  },
+  row: {
+    cursor: 'pointer',
+    transitionProperty: 'background-color, transform',
+    transitionDuration: '120ms',
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground3,
+    },
+    '&:focus-within': {
+      outline: `2px solid ${tokens.colorBrandBackground}`,
+      outlineOffset: '-2px',
+    },
   },
   liveRegion: {
     position: 'absolute',
@@ -80,12 +159,13 @@ const useStyles = makeStyles({
     display: 'inline-flex',
     alignItems: 'baseline',
     gap: '0.25rem',
+    fontFamily: tokens.fontFamilyMonospace,
   },
   additions: {
-    color: tokens.colorPaletteLightGreenForeground1,
+    color: '#3FB950',
   },
   deletions: {
-    color: tokens.colorPaletteRedForeground1,
+    color: '#F85149',
   },
   srOnly: {
     position: 'absolute',
@@ -144,6 +224,22 @@ const statusOrder: Record<Task['status'], number> = {
   archived: 4,
 }
 
+const statusAccent: Record<Task['status'], string> = {
+  open: '#3FB950',
+  running: '#D29922',
+  merged: '#BC8CFF',
+  failed: '#F85149',
+  archived: '#6E7681',
+}
+
+const statusLabelMap: Record<Task['status'], string> = {
+  open: 'Open',
+  running: 'Running',
+  merged: 'Merged',
+  failed: 'Failed',
+  archived: 'Archived',
+}
+
 export const TaskList = ({
   tasks,
   sortState,
@@ -167,8 +263,29 @@ export const TaskList = ({
     return { additions, deletions }
   }, [tasks])
 
+  const statusCounts = useMemo(() => {
+    const counts: Record<Task['status'], number> = {
+      open: 0,
+      running: 0,
+      merged: 0,
+      failed: 0,
+      archived: 0,
+    }
+
+    for (const task of tasks) {
+      counts[task.status] += 1
+    }
+
+    return counts
+  }, [tasks])
+
+  const activeStatuses = useMemo(
+    () => (Object.keys(statusCounts) as Task['status'][]).filter((statusKey) => statusCounts[statusKey] > 0),
+    [statusCounts],
+  )
+
   const liveRegionMessage = tasks.length
-    ? `Showing ${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'} with +${totals.additions} additions and −${totals.deletions} deletions.`
+    ? `Showing ${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'} with +${totals.additions} additions and -${totals.deletions} deletions.`
     : 'No tasks to display.'
 
   const columns = useMemo(
@@ -230,6 +347,35 @@ export const TaskList = ({
 
   return (
     <section className={styles.container} aria-label="Tasks list" role="region">
+      <div className={styles.summaryCard} role="status" aria-live="polite">
+        <div className={styles.summaryStat}>
+          <span className={styles.summaryLabel}>Active tasks</span>
+          <span className={styles.summaryValue}>{tasks.length}</span>
+          <span className={styles.summaryDiff}>
+            <span className={styles.additions}>+{totals.additions}</span>
+            <span className={styles.deletions}>-{totals.deletions}</span>
+          </span>
+        </div>
+        <div className={styles.summaryStat}>
+          <span className={styles.summaryLabel}>Status mix</span>
+          <div className={styles.statusGroup}>
+            {activeStatuses.length > 0 ? (
+              activeStatuses.map((statusKey) => (
+                <span key={statusKey} className={styles.statusPill}>
+                  <span
+                    className={styles.statusDot}
+                    style={{ backgroundColor: statusAccent[statusKey] }}
+                    aria-hidden="true"
+                  />
+                  {statusLabelMap[statusKey]} • {statusCounts[statusKey]}
+                </span>
+              ))
+            ) : (
+              <span>No activity yet</span>
+            )}
+          </div>
+        </div>
+      </div>
       <div className={styles.gridWrapper}>
         <div
           className={styles.liveRegion}
@@ -253,8 +399,10 @@ export const TaskList = ({
           {shouldVirtualize ? (
             <VirtualizedScrollView style={{ height: '100%' }}>
               <DataGridHeader>
-                <DataGridRow>
-                  {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
+                <DataGridRow className={styles.headerRow}>
+                  {({ renderHeaderCell }) => (
+                    <DataGridHeaderCell className={styles.headerCell}>{renderHeaderCell()}</DataGridHeaderCell>
+                  )}
                 </DataGridRow>
               </DataGridHeader>
               <VirtualizedDataGridBody<Task> itemSize={64} aria-live="polite">
@@ -265,6 +413,7 @@ export const TaskList = ({
                     <DataGridRow
                       key={rowId}
                       style={rowStyle}
+                      className={styles.row}
                       onDoubleClick={() => onOpenTask(item)}
                       onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
                         if (event.key === 'Enter') {
@@ -282,14 +431,17 @@ export const TaskList = ({
           ) : (
             <>
               <DataGridHeader>
-                <DataGridRow>
-                  {({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}
+                <DataGridRow className={styles.headerRow}>
+                  {({ renderHeaderCell }) => (
+                    <DataGridHeaderCell className={styles.headerCell}>{renderHeaderCell()}</DataGridHeaderCell>
+                  )}
                 </DataGridRow>
               </DataGridHeader>
               <DataGridBody<Task> aria-live="polite">
                 {({ item, rowId }) => (
                   <DataGridRow
                     key={rowId}
+                    className={styles.row}
                     onDoubleClick={() => onOpenTask(item)}
                     onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
                       if (event.key === 'Enter') {

@@ -16,15 +16,26 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     minWidth: 0,
     minHeight: '100vh',
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: tokens.colorNeutralBackground1,
   },
   content: {
     flex: 1,
     minHeight: 0,
-    ...shorthands.padding('0', '2.5rem', '2.5rem'),
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.5rem',
+    alignItems: 'center',
+    ...shorthands.padding('2rem', '2.5rem', '3rem'),
+    gap: '2.5rem',
+  },
+  contentInner: {
+    width: '100%',
+    maxWidth: '75rem',
+    margin: '0 auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2rem',
+    flex: 1,
+    minWidth: 0,
   },
 })
 
@@ -43,7 +54,7 @@ export const AppShell = ({
       <div className={styles.main}>
         <TopBar>{toolbarContent}</TopBar>
         <main className={styles.content} role="main" tabIndex={-1}>
-          {children}
+          <div className={styles.contentInner}>{children}</div>
         </main>
       </div>
     </div>

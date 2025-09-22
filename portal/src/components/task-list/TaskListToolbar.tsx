@@ -1,6 +1,6 @@
 import '../../polyfills/nodeFilter'
 import type { ChangeEvent, MutableRefObject } from 'react'
-import { Button, Input, Tooltip, makeStyles } from '@fluentui/react-components'
+import { Button, Input, Tooltip, makeStyles, shorthands, tokens } from '@fluentui/react-components'
 import type { InputOnChangeData } from '@fluentui/react-components'
 import { Add24Regular, ArrowClockwise24Regular } from '@fluentui/react-icons'
 
@@ -10,6 +10,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: '0.75rem',
     width: '100%',
+    ...shorthands.padding('0.9rem', '1rem'),
+    borderRadius: '0.75rem',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground2,
+    boxShadow: tokens.shadow2,
   },
   input: {
     flex: 1,
@@ -41,6 +46,7 @@ export const TaskListToolbar = ({
   return (
     <div className={styles.root}>
       <Input
+        appearance="filled-darker"
         placeholder="Search tasks"
         aria-label="Search tasks"
         value={searchValue}
@@ -50,8 +56,13 @@ export const TaskListToolbar = ({
         ref={searchInputRef}
         type="search"
       />
-      <Tooltip relationship="label" content="Refresh">
-        <Button appearance="subtle" icon={<ArrowClockwise24Regular />} onClick={onRefresh} aria-label="Refresh" />
+      <Tooltip relationship="label" content="Refresh task data">
+        <Button
+          appearance="subtle"
+          icon={<ArrowClockwise24Regular />}
+          onClick={onRefresh}
+          aria-label="Refresh"
+        />
       </Tooltip>
       <Button appearance="primary" icon={<Add24Regular />} onClick={onCreateTask}>
         New Task
