@@ -2,7 +2,7 @@ import { Skeleton, Text, makeStyles, shorthands, tokens } from '@fluentui/react-
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import { formatRelativeTime } from '../../lib/formatRelativeTime'
 import type { Task } from '../../types/task'
-import { TaskStatusPill } from './TaskStatusPill'
+import { TaskStatusBadge } from '../data/TaskStatusBadge'
 
 type TaskListSimplifiedProps = {
   tasks: Task[]
@@ -181,7 +181,7 @@ export const TaskListSimplified = ({
                 {highlightMatches(task.title, highlightQuery, styles.highlight)}
               </Text>
               <div className={styles.meta} aria-label="Diff statistics">
-                <TaskStatusPill status={task.status} />
+                <TaskStatusBadge status={task.status} />
                 <span>
                   <span className={styles.additions}>+{task.additions}</span>
                   {' '}

@@ -15,7 +15,7 @@ import { useVoiceInput } from '../../hooks/useVoiceInput'
 type MainInputAction = 'ask' | 'code'
 
 export type MainInputProps = {
-  placeholder: string
+  placeholder?: string
   value: string
   onChange: (value: string) => void
   onSubmit: (action: MainInputAction) => void
@@ -28,17 +28,16 @@ export type MainInputProps = {
 const useStyles = makeStyles({
   container: {
     backgroundColor: '#21262D',
-    borderRadius: '12px',
+    borderRadius: '6px',
     border: '1px solid #30363D',
     ...shorthands.padding('1.5rem', '1.75rem'),
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    boxShadow: tokens.shadow4,
+    boxShadow: 'none',
     selectors: {
       '&:focus-within': {
-        borderColor: '#58A6FF',
-        boxShadow: '0 0 0 3px rgba(88, 166, 255, 0.35)',
+        border: '2px solid #58A6FF',
       },
     },
   },
@@ -61,14 +60,16 @@ const useStyles = makeStyles({
   },
   input: {
     flex: 1,
-    minHeight: '3rem',
+    minHeight: '48px',
     fontSize: '1.05rem',
     lineHeight: 1.5,
     backgroundColor: tokens.colorNeutralBackground1,
-    borderRadius: '0.75rem',
+    borderRadius: '6px',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    boxShadow: 'none',
     selectors: {
       '& textarea': {
-        minHeight: '3rem',
+        minHeight: '48px',
         maxHeight: '7.5rem',
         backgroundColor: tokens.colorNeutralBackground1,
         color: tokens.colorNeutralForeground1,
@@ -229,7 +230,7 @@ export const MainInputComponent = ({
           />
         </Tooltip>
         <Textarea
-          placeholder={placeholder}
+          placeholder={placeholder ?? "Describe the task. The agent will plan and open a PR."}
           value={value}
           onChange={handleChange}
           className={styles.input}

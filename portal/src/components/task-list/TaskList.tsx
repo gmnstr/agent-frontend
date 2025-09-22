@@ -21,7 +21,7 @@ import { useMemo } from 'react'
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
 import { formatRelativeTime } from '../../lib/formatRelativeTime'
 import type { Task } from '../../types/task'
-import { TaskStatusPill } from './TaskStatusPill'
+import { TaskStatusBadge } from '../data/TaskStatusBadge'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 const shouldVirtualize =
@@ -315,7 +315,7 @@ export const TaskList = ({
         columnId: 'status',
         compare: (a, b) => statusOrder[a.status] - statusOrder[b.status],
         renderHeaderCell: () => 'Status',
-        renderCell: (item) => <TaskStatusPill status={item.status} />, 
+        renderCell: (item) => <TaskStatusBadge status={item.status} />, 
       }),
       createTableColumn<Task>({
         columnId: 'changes',

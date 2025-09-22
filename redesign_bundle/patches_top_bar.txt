@@ -1,0 +1,95 @@
+diff --git a/portal/src/components/layout/TopBar.tsx b/portal/src/components/layout/TopBar.tsx
+--- a/portal/src/components/layout/TopBar.tsx
++++ b/portal/src/components/layout/TopBar.tsx
+@@
+-  root: {
+-    position: 'sticky',
+-    top: 0,
+-    zIndex: 5,
+-    backgroundColor: tokens.colorNeutralBackground2,
+-    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+-    display: 'flex',
+-    alignItems: 'center',
+-    justifyContent: 'space-between',
+-    ...shorthands.padding('0', '2.5rem'),
+-    minHeight: '4rem',
+-    boxShadow: tokens.shadow2,
+-    gap: '2rem',
+-  },
++  root: {
++    position: 'sticky',
++    top: 0,
++    zIndex: 5,
++    backgroundColor: tokens.colorNeutralBackground2,
++    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
++    display: 'flex',
++    alignItems: 'center',
++    justifyContent: 'space-between',
++    ...shorthands.padding('0', '2rem'),
++    minHeight: '3.5rem',
++    gap: '1.5rem',
++  },
+@@
+-  brandIcon: {
+-    width: '2rem',
+-    height: '2rem',
+-    borderRadius: tokens.borderRadiusCircular,
+-    backgroundColor: tokens.colorBrandBackground,
+-    color: tokens.colorBrandForegroundOnLight,
+-    display: 'grid',
+-    placeItems: 'center',
+-    fontSize: '1.125rem',
+-    boxShadow: tokens.shadow4,
+-    letterSpacing: '-0.05em',
+-  },
++  brandIcon: {
++    width: '1.75rem',
++    height: '1.75rem',
++    borderRadius: '6px',
++    backgroundColor: tokens.colorBrandBackground,
++    color: tokens.colorBrandForegroundOnLight,
++    display: 'grid',
++    placeItems: 'center',
++    fontSize: '1rem',
++    letterSpacing: '-0.05em',
++    border: `1px solid ${tokens.colorBrandBackground2}`,
++  },
+@@
+-  navLink: {
+-    fontSize: '0.95rem',
+-    color: tokens.colorNeutralForeground2,
+-    fontWeight: 500,
+-    textDecoration: 'none',
+-    transitionProperty: 'color, transform',
+-    transitionDuration: '120ms',
+-    selectors: {
+-      '&:hover': {
+-        color: tokens.colorBrandForeground1,
+-      },
+-    },
+-  },
++  navLink: {
++    fontSize: '0.95rem',
++    color: tokens.colorNeutralForeground2,
++    fontWeight: 600,
++    textDecoration: 'none',
++    transitionProperty: 'color',
++    transitionDuration: '120ms',
++    selectors: {
++      '&:hover': {
++        color: tokens.colorBrandForeground1,
++      },
++    },
++  },
+@@
+-  avatarBadge: {
+-    position: 'absolute',
+-    top: '-0.25rem',
+-    right: '-0.35rem',
+-    boxShadow: tokens.shadow4,
+-  },
++  avatarBadge: {
++    position: 'absolute',
++    top: '-0.25rem',
++    right: '-0.35rem',
++  },

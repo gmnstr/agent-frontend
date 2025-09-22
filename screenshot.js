@@ -42,7 +42,11 @@ async function takeScreenshots() {
     });
 
     // Try to navigate to different routes if they exist
-    const routes = ['/tasks', '/settings'];
+    const routes = [
+      '/tasks',
+      '/settings',
+      '/tasks/task-1' // Example task detail page
+    ];
 
     for (const route of routes) {
       try {
@@ -53,7 +57,7 @@ async function takeScreenshots() {
         });
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const filename = `current-design${route.replace('/', '-')}.png`;
+        const filename = `current-design${route.replace(/\//g, '-')}.png`;
         await page.screenshot({
           path: filename,
           fullPage: true

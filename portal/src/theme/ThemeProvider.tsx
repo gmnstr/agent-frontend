@@ -5,10 +5,8 @@ import {
   FluentProvider,
   makeStyles,
   shorthands,
-  webDarkTheme,
-  webLightTheme,
 } from '@fluentui/react-components'
-import type { Theme } from '@fluentui/react-components'
+import { sharpDarkTheme, sharpLightTheme } from './sharpTheme'
 
 type ColorMode = 'dark' | 'light'
 
@@ -34,27 +32,18 @@ const getInitialMode = (): ColorMode => {
 const brandFontStack = "'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
 const monoFontStack = "'JetBrains Mono', 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace"
 
-const createTheme = (mode: ColorMode): Theme => {
-  const base = mode === 'dark' ? webDarkTheme : webLightTheme
-  const isDark = mode === 'dark'
+const createTheme = (mode: ColorMode) => {
+  const base = mode === 'dark' ? sharpDarkTheme : sharpLightTheme
 
-  const common: Partial<Theme> = {
-    fontFamilyBase: brandFontStack,
-    fontFamilyNumeric: brandFontStack,
-    fontFamilyMonospace: monoFontStack,
-    borderRadiusSmall: '6px',
-    borderRadiusMedium: '6px',
-    borderRadiusLarge: '6px',
-    shadow2: '0 1px 3px rgba(0,0,0,0.12)',
-    shadow4: '0 4px 12px rgba(0,0,0,0.15)',
-    shadow8: '0 8px 24px rgba(0,0,0,0.20)',
-    shadow16: '0 8px 24px rgba(0,0,0,0.20)',
-  }
+  // Apply custom brand colors on top of sharp theme
+  const isDark = mode === 'dark'
 
   if (isDark) {
     return {
       ...base,
-      ...common,
+      fontFamilyBase: brandFontStack,
+      fontFamilyNumeric: brandFontStack,
+      fontFamilyMonospace: monoFontStack,
       colorNeutralBackground1: '#0D1117',
       colorNeutralBackground2: '#161B22',
       colorNeutralBackground3: '#21262D',
@@ -86,7 +75,9 @@ const createTheme = (mode: ColorMode): Theme => {
 
   return {
     ...base,
-    ...common,
+    fontFamilyBase: brandFontStack,
+    fontFamilyNumeric: brandFontStack,
+    fontFamilyMonospace: monoFontStack,
     colorNeutralBackground1: '#F6F8FA',
     colorNeutralBackground2: '#FFFFFF',
     colorNeutralBackground3: '#EAEFF5',

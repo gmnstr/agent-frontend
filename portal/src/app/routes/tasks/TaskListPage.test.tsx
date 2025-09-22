@@ -112,7 +112,7 @@ describe('TaskList interactions', () => {
       throw new Error('Live region not found')
     }
 
-    expect(liveRegion).toHaveAttribute('aria-live', 'polite')
+    expect(liveRegion.getAttribute('aria-live')).toBe('polite')
 
     const srTextNodes = screen.getAllByText('+200 additions, -40 deletions')
     expect(srTextNodes.length).toBeGreaterThan(0)

@@ -68,6 +68,15 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     gap: '1rem',
   },
+  sectionTitle: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
+  sectionCaption: {
+    color: tokens.colorNeutralForeground2,
+    marginTop: '0.25rem',
+  },
   tabList: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -214,9 +223,11 @@ export const HomePage = () => {
 
       <section className={styles.taskManagement} aria-labelledby="home-task-heading">
         <div className={styles.sectionHeader}>
-          <div>
+          <div className={styles.sectionTitle}>
             <Title3 id="home-task-heading">Recent tasks</Title3>
-            <Caption1>Keep an eye on the missions the agent is actively shaping.</Caption1>
+            <Caption1 className={styles.sectionCaption}>
+              Keep an eye on the missions the agent is actively shaping.
+            </Caption1>
           </div>
         </div>
         <div className={styles.tabList}>

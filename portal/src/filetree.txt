@@ -1,0 +1,59 @@
+.
+├── api
+│   ├── environments.ts
+│   └── tasks.ts
+├── app
+│   ├── App.tsx
+│   ├── router.tsx
+│   └── routes
+│       ├── RootLayout.tsx
+│       ├── RouteErrorBoundary.tsx
+│       ├── home
+│       │   └── HomePage.tsx
+│       ├── settings
+│       │   └── EnvironmentsPlaceholder.tsx
+│       └── tasks
+│           ├── TaskDetailPlaceholder.tsx
+│           ├── TaskListPage.test.tsx
+│           ├── TaskListPage.tsx
+│           └── taskListUtils.ts
+├── assets
+│   └── react.svg
+├── components
+│   ├── diff
+│   │   └── CodeDiffViewer.tsx
+│   ├── environments
+│   │   └── EnvironmentTable.tsx
+│   ├── input
+│   │   └── MainInputComponent.tsx
+│   ├── layout
+│   │   ├── AppShell.tsx
+│   │   ├── LeftRail.tsx
+│   │   └── TopBar.tsx
+│   └── task-list
+│       ├── TaskList.tsx
+│       ├── TaskListSimplified.tsx
+│       ├── TaskListToolbar.tsx
+│       └── TaskStatusPill.tsx
+├── filetree.txt
+├── hooks
+│   ├── useHotkey.ts
+│   ├── usePrefersReducedMotion.ts
+│   ├── useTaskEventStream.ts
+│   └── useVoiceInput.ts
+├── index.css
+├── lib
+│   ├── formatRelativeTime.ts
+│   └── telemetry.ts
+├── main.tsx
+├── polyfills
+│   └── nodeFilter.ts
+├── theme
+│   └── ThemeProvider.tsx
+├── types
+│   ├── environment.ts
+│   ├── speech.d.ts
+│   └── task.ts
+└── vite-env.d.ts
+
+19 directories, 38 files

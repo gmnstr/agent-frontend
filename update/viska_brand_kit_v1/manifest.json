@@ -1,0 +1,34 @@
+{
+  "name": "Viska Brand Kit",
+  "version": "1.0.0",
+  "colors": {
+    "dark_background": "#0E1116",
+    "on_dark": "#FFFFFF",
+    "on_light": "#1C2430"
+  },
+  "assets_originals": [
+    "assets/originals/6_pillars_comprehensive_marketing_deliverables_v_1.md",
+    "assets/originals/viska_brand_document.md",
+    "assets/originals/current-design-full.png",
+    "assets/originals/current-design-settings.png",
+    "assets/originals/current-design-tasks-task-1.png",
+    "assets/originals/current-design-tasks.png",
+    "assets/originals/current-design-viewport.png",
+    "assets/originals/Generated Image September 22, 2025 - 8_17PM.png",
+    "assets/originals/Generated Image September 22, 2025 - 8_18PM.png",
+    "assets/originals/Generated Image September 22, 2025 - 8_18PM (1).png",
+    "assets/originals/Generated Image September 22, 2025 - 8_19PM.png",
+    "assets/originals/Generated Image September 22, 2025 - 8_19PM (1).png",
+    "assets/originals/Generated Image September 22, 2025 - 8_29PM (1).png",
+    "assets/originals/Generated Image September 22, 2025 - 8_30PM (1).png",
+    "assets/originals/Generated Image September 22, 2025 - 8_31PM (1).png",
+    "assets/originals/Generated Image September 22, 2025 - 8_33PM.png"
+  ],
+  "docs": [
+    "docs/6_pillars_comprehensive_marketing_deliverables_v_1.md",
+    "docs/hero-header-prompts-v1.md",
+    "docs/nano-banana-logo-prompt-pack-v1.md",
+    "docs/viska_brand_document.md"
+  ],
+  "missing": []
+}

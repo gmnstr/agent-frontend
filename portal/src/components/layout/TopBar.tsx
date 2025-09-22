@@ -40,10 +40,9 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    ...shorthands.padding('0', '2.5rem'),
-    minHeight: '4rem',
-    boxShadow: tokens.shadow2,
-    gap: '2rem',
+    ...shorthands.padding('0', '2rem'),
+    minHeight: '3.5rem',
+    gap: '1.5rem',
     '@media (max-width: 900px)': {
       ...shorthands.padding('0', '1.25rem'),
     },
@@ -70,16 +69,16 @@ const useStyles = makeStyles({
     fontWeight: 600,
   },
   brandIcon: {
-    width: '2rem',
-    height: '2rem',
-    borderRadius: tokens.borderRadiusCircular,
+    width: '1.75rem',
+    height: '1.75rem',
+    borderRadius: '6px',
     backgroundColor: tokens.colorBrandBackground,
     color: tokens.colorBrandForegroundOnLight,
     display: 'grid',
     placeItems: 'center',
-    fontSize: '1.125rem',
-    boxShadow: tokens.shadow4,
+    fontSize: '1rem',
     letterSpacing: '-0.05em',
+    border: `1px solid ${tokens.colorBrandBackground2}`,
   },
   brandText: {
     display: 'flex',
@@ -107,9 +106,9 @@ const useStyles = makeStyles({
   navLink: {
     fontSize: '0.95rem',
     color: tokens.colorNeutralForeground2,
-    fontWeight: 500,
+    fontWeight: 600,
     textDecoration: 'none',
-    transitionProperty: 'color, transform',
+    transitionProperty: 'color',
     transitionDuration: '120ms',
     selectors: {
       '&:hover': {
@@ -154,7 +153,6 @@ const useStyles = makeStyles({
     position: 'absolute',
     top: '-0.25rem',
     right: '-0.35rem',
-    boxShadow: tokens.shadow4,
   },
   mobileNav: {
     display: 'flex',

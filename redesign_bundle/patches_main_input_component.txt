@@ -1,0 +1,19 @@
+diff --git a/portal/src/components/inputs/MainInputComponent.tsx b/portal/src/components/inputs/MainInputComponent.tsx
+--- a/portal/src/components/inputs/MainInputComponent.tsx
++++ b/portal/src/components/inputs/MainInputComponent.tsx
+@@
+-  input: {
+-    borderRadius: tokens.borderRadiusCircular,
+-    minHeight: '56px',
+-    boxShadow: tokens.shadow4,
+-  },
++  input: {
++    borderRadius: '6px',
++    minHeight: '48px',
++    border: `1px solid ${tokens.colorNeutralStroke1}`,
++    boxShadow: 'none',
++    backgroundColor: tokens.colorNeutralBackground1,
++  },
+@@
+-<TextField placeholder="What should we code next?"
++<TextField placeholder="Describe the task. The agent will plan and open a PR."

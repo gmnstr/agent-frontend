@@ -1,0 +1,11 @@
+diff --git a/portal/src/theme/ThemeProvider.tsx b/portal/src/theme/ThemeProvider.tsx
+--- a/portal/src/theme/ThemeProvider.tsx
++++ b/portal/src/theme/ThemeProvider.tsx
+@@
+-import { FluentProvider } from '@fluentui/react-components'
+-import { webDarkTheme, webLightTheme } from '@fluentui/react-components'
++import { FluentProvider } from '@fluentui/react-components'
++import { sharpDarkTheme, sharpLightTheme } from './sharpTheme'
+@@
+-  const theme = useMemo(() => (prefersDark ? webDarkTheme : webLightTheme), [prefersDark])
++  const theme = useMemo(() => (prefersDark ? sharpDarkTheme : sharpLightTheme), [prefersDark])

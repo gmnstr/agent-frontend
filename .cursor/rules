@@ -1,0 +1,249 @@
+# Cursor Rules - Agent Frontend Project
+
+## Development Workflow
+
+### Server Management
+- **Always use** `./scripts/start.sh` from project root to start development server
+- **Always use** `./scripts/stop.sh` for graceful server shutdown
+- **Never use** manual `npm run dev` unless scripts fail
+- **Always run** `cd portal` before any npm commands
+
+### Core Commands
+```bash
+# Development
+./scripts/start.sh          # Start with validation
+./scripts/stop.sh          # Graceful shutdown
+
+# Manual (only if scripts fail)
+cd portal && npm run dev   # Start server
+cd portal && npm run build # Production build
+cd portal && npm test      # Run tests
+cd portal && npm run lint  # Check code quality
+```
+
+## Code Style Guidelines
+
+### ✅ DO
+- **React Patterns**: Use functional components with hooks only
+- **TypeScript**: Strict mode - define interfaces for all props, use type-only imports
+- **Fluent UI**: Use `@fluentui/react-components` for all UI components
+- **Styling**: Use `makeStyles` from Fluent UI with design tokens only
+- **State Management**: React Query for server state, local state with hooks
+- **File Organization**: Follow established directory structure in `portal/src/`
+- **Component Props**: Define clear TypeScript interfaces with optional properties
+- **Error Handling**: Include proper error states and loading states
+- **Accessibility**: Add ARIA labels and keyboard navigation support
+- **Imports**: Use type-only imports when needed (`import type { ... }`)
+
+### ❌ DON'T
+- **No CSS files** - Use Griffel CSS-in-JS with makeStyles only
+- **No class components** - Use functional components only
+- **No hardcoded values** - Use Fluent UI design tokens for colors/spacing
+- **No direct DOM manipulation** - Use React patterns and refs
+- **No console.log** in production code - Use proper error handling
+- **No relative imports beyond 2 levels** - Keep imports clean
+- **No inline styles** - Use makeStyles for all styling
+- **No generic div/span** if Fluent UI component exists
+
+## Component Development Patterns
+
+### Component Structure Template
+```typescript
+import type { ReactNode } from 'react'
+import { makeStyles, tokens } from '@fluentui/react-components'
+
+interface ComponentProps {
+  title: string
+  onAction: (data: FormData) => void
+  isLoading?: boolean
+  children?: ReactNode
+}
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+  },
+})
+
+export const Component = ({ title, onAction, isLoading = false }: ComponentProps) => {
+  const styles = useStyles()
+
+  return (
+    <div className={styles.root}>
+      {/* Component implementation */}
+    </div>
+  )
+}
+```
+
+### Event Handlers Pattern
+```typescript
+const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+  event.preventDefault()
+  onAction?.(data)
+}, [onAction, data])
+```
+
+### API Integration Rules
+- **Always use** React Query hooks for all API calls
+- **Follow** established patterns in `portal/src/api/tasks.ts` and `environments.ts`
+- **Mock-first development** - All APIs currently return mock data
+- **Simulate real-time** features with intervals (not actual WebSockets yet)
+
+## Architecture Patterns
+
+### Directory Structure
+```
+portal/src/
+├── app/              # Application core (routes, router)
+├── components/       # Reusable UI components
+│   ├── layout/      # Layout components (AppShell, TopBar)
+│   ├── task-list/   # Task-related components
+│   ├── input/       # Input components with voice support
+│   └── diff/        # Code diff visualization
+├── hooks/           # Custom React hooks
+├── api/             # API layer (currently mocked)
+├── types/           # TypeScript definitions
+├── lib/             # Utility functions
+└── theme/           # Theme configuration
+```
+
+### State Management Strategy
+1. **Server State**: React Query for API data and caching
+2. **UI State**: Local React state with useState/useReducer
+3. **Global State**: Zustand for cross-component state
+4. **Context**: React Context for provider communication
+
+### Provider Hierarchy
+- React Query → Theme Provider → Router Provider
+- Layout: `RootLayout` → `AppShell` → Page Components
+
+## Testing Guidelines
+
+### Running Tests
+```bash
+cd portal
+npm test                    # Run all tests
+npm test -- --coverage     # Run with coverage (target: 80%+)
+npm test -- TaskListPage.test.tsx  # Single file
+npm test -- --watch        # Watch mode
+```
+
+### Testing Rules
+- **Use** React Testing Library and Vitest
+- **Test** user interactions, not implementation details
+- **Mock** external dependencies (APIs, localStorage)
+- **Include** accessibility tests with screen reader queries
+- **Co-locate** test files with components: `Component.test.tsx`
+- **Follow** patterns in existing `TaskListPage.test.tsx`
+
+### Critical Testing Areas
+- API layer mocking (tasks.ts, environments.ts)
+- Voice input browser compatibility
+- Real-time event stream behavior
+- Component interactions and state management
+
+## TypeScript Guidelines
+
+### Common Fixes Applied
+- **Use** type-only imports: `import type { TabValue } from '@fluentui/react-components'`
+- **String values** for CSS properties: `margin: '-1px'` not `margin: -1`
+- **Proper** SpeechRecognition types imported from `../types/speech.d.ts`
+- **Explicit** parameter types: `(_: unknown, data: { value: string }) =>`
+
+### Styling Type Safety
+```typescript
+const useStyles = makeStyles({
+  container: {
+    width: '100%',           // ✅ String value
+    height: '1px',           // ✅ String value
+    margin: '-1px',          // ✅ String value
+    // width: 1,             // ❌ Numeric not allowed
+  },
+})
+```
+
+## Voice Input Considerations
+
+### Web Speech API Rules
+- **Browser compatibility** varies significantly - always check `isSupported`
+- **Requires HTTPS** in production
+- **Include** graceful fallbacks for unsupported browsers
+- **Test** across Chrome, Safari, Firefox
+- **Handle** permission states and errors properly
+
+### Implementation Pattern
+```typescript
+const { isSupported, isRecording, transcript, start, stop } = useVoiceInput({
+  lang: 'en-US'
+})
+
+// Always check isSupported before using voice features
+if (isSupported) {
+  // Enable voice input UI
+}
+```
+
+## Performance & Security
+
+### Security Rules
+- **Never commit** sensitive keys or tokens
+- **Validate** all user inputs
+- **Use HTTPS** in production for Web Speech API
+- **Follow** Fluent UI accessibility patterns
+
+### Performance Rules
+- **Use** React.memo for expensive components
+- **Implement** proper loading states
+- **Consider** code splitting for large features
+- **Optimize** images and assets
+
+## File Locations for Common Tasks
+
+### Adding New Features
+- **Routes**: `portal/src/app/router.tsx`
+- **API integration**: `portal/src/api/` directory
+- **Custom hooks**: `portal/src/hooks/` directory
+- **UI components**: `portal/src/components/` directory
+- **Type definitions**: `portal/src/types/` directory
+- **Test files**: Co-located with components or in `__tests__` directories
+
+### Documentation Updates
+- **Main docs**: `docs/README.md`
+- **API docs**: `docs/api/README.md`
+- **Architecture**: `docs/architecture/overview.md`
+- **Components**: `docs/components/README.md`
+- **Screenshots**: `docs/screenshots/`
+
+## Troubleshooting
+
+### TypeScript Errors
+- **Run** `npm run build` to see all compilation errors
+- **Check** import paths and type definitions
+- **Ensure** Fluent UI components are imported correctly
+
+### Server Issues
+- **Use** `./scripts/stop.sh` then `./scripts/start.sh` for restart
+- **Check** port 5173 conflicts: `lsof -i :5173`
+- **Verify** Node.js 18+ and npm are installed
+
+### Test Failures
+- **Run** individual tests to isolate issues
+- **Check** mock data matches expected interfaces
+- **Verify** component props and state handling
+
+## Pre-commit Checklist
+```bash
+cd portal
+npm run lint           # Must pass ✅
+npm test              # Must pass ✅
+npm run build         # Must succeed ✅
+```
+
+## Goals and Current Status
+- **Test Coverage**: 32.2% (Target: 80%+)
+- **TypeScript**: Strict mode with zero compilation errors
+- **Performance**: Optimized Vite build with code splitting
+- **Documentation**: Comprehensive docs structure established

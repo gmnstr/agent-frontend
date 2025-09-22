@@ -16,7 +16,7 @@ type VoiceInputState = {
 }
 
 export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): VoiceInputState => {
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<any>(null)
   const [isSupported, setIsSupported] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -47,7 +47,7 @@ export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): Voice
       setTranscript('')
     }
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let aggregated = ''
 
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
@@ -61,7 +61,7 @@ export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): Voice
       setTranscript(aggregated.trim())
     }
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: any) => {
       setError(event.message || event.error)
       setIsRecording(false)
     }
