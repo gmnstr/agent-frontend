@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './routes/RootLayout'
 import { RouteErrorBoundary } from './routes/RouteErrorBoundary'
+import { HomePage } from './routes/home/HomePage'
 import { TaskListPage } from './routes/tasks/TaskListPage'
 import { TaskDetailPlaceholder } from './routes/tasks/TaskDetailPlaceholder'
 import { EnvironmentsPlaceholder } from './routes/settings/EnvironmentsPlaceholder'
@@ -13,7 +14,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/tasks" replace />,
+        element: <HomePage />,
       },
       {
         path: 'tasks',
