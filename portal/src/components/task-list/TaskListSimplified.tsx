@@ -36,7 +36,7 @@ const useStyles = makeStyles({
       },
       '&:focus-visible': {
         outline: `2px solid ${tokens.colorBrandBackground}`,
-        outlineOffset: 3,
+        outlineOffset: '3px',
       },
     },
   },
@@ -144,9 +144,9 @@ export const TaskListSimplified = ({
       <div className={styles.root} aria-busy="true" aria-live="polite">
         {Array.from({ length: 3 }, (_, index) => (
           <div key={index} className={styles.skeleton}>
-            <Skeleton shape="rectangle" appearance="translucent" height={20} />
-            <Skeleton shape="rectangle" appearance="translucent" height={16} />
-            <Skeleton shape="rectangle" appearance="translucent" height={16} />
+            <Skeleton appearance="translucent" />
+            <Skeleton appearance="translucent" />
+            <Skeleton appearance="translucent" />
           </div>
         ))}
       </div>

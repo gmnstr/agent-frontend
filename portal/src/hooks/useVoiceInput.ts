@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import '../types/speech.d.ts'
 
 type VoiceInputOptions = {
   lang?: string

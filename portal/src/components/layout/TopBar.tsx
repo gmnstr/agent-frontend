@@ -117,7 +117,7 @@ const useStyles = makeStyles({
       },
       '&:focus-visible': {
         outline: `2px solid ${tokens.colorBrandBackground}`,
-        outlineOffset: 3,
+        outlineOffset: '3px',
       },
       '&[aria-current="page"]': {
         color: tokens.colorBrandForeground1,

@@ -1,3 +1,4 @@
+import type { DataGridProps, TableColumnDefinition } from '@fluentui/react-components'
 import {
   Button,
   Caption1,
@@ -6,7 +7,6 @@ import {
   DataGridCell,
   DataGridHeader,
   DataGridHeaderCell,
-  DataGridProps,
   DataGridRow,
   Input,
   Menu,
@@ -20,7 +20,6 @@ import {
   makeStyles,
   shorthands,
   tokens,
-  type TableColumnDefinition,
 } from '@fluentui/react-components'
 import { MoreHorizontal24Regular, Search24Regular } from '@fluentui/react-icons'
 import { useMemo, useState } from 'react'
@@ -122,11 +121,11 @@ const useStyles = makeStyles({
   },
   liveRegion: {
     position: 'absolute',
-    width: 1,
-    height: 1,
-    margin: -1,
-    border: 0,
-    padding: 0,
+    width: '1px',
+    height: '1px',
+    margin: '-1px',
+    border: '0',
+    padding: '0',
     clip: 'rect(0 0 0 0)',
     overflow: 'hidden',
   },

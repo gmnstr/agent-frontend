@@ -8,7 +8,6 @@ import {
   tokens,
 } from '@fluentui/react-components'
 import { Attach24Regular, Mic24Regular } from '@fluentui/react-icons'
-import { keyframes } from '@griffel/react'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { useVoiceInput } from '../../hooks/useVoiceInput'
@@ -24,17 +23,7 @@ export type MainInputProps = {
   hasVoiceInput?: boolean
 }
 
-const voicePulse = keyframes({
-  '0%': {
-    boxShadow: '0 0 0 0 rgba(56, 139, 253, 0.45)',
-  },
-  '50%': {
-    boxShadow: '0 0 0 6px rgba(56, 139, 253, 0.15)',
-  },
-  '100%': {
-    boxShadow: '0 0 0 0 rgba(56, 139, 253, 0)',
-  },
-})
+// Removed keyframes animation for now to fix TypeScript build
 
 const useStyles = makeStyles({
   container: {
@@ -65,13 +54,10 @@ const useStyles = makeStyles({
   },
   voiceButtonActive: {
     color: tokens.colorBrandForegroundLink,
-    animationName: voicePulse,
-    animationDuration: '1.25s',
-    animationTimingFunction: 'ease-in-out',
-    animationIterationCount: 'infinite',
+    backgroundColor: tokens.colorBrandBackgroundSelected,
   },
   voiceButtonReducedMotion: {
-    animationDuration: '0s',
+    // No special reduced motion styles needed without animation
   },
   input: {
     flex: 1,
@@ -102,14 +88,14 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground3,
   },
   visuallyHidden: {
-    border: 0,
+    border: '0',
     clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
+    height: '1px',
+    margin: '-1px',
     overflow: 'hidden',
-    padding: 0,
+    padding: '0',
     position: 'absolute',
-    width: 1,
+    width: '1px',
   },
 })
 

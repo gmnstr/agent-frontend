@@ -99,7 +99,7 @@ const useStyles = makeStyles({
       },
       '&:focus-visible': {
         outline: `2px solid ${tokens.colorBrandBackground}`,
-        outlineOffset: 2,
+        outlineOffset: '2px',
       },
     },
   },

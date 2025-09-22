@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
-import type { SelectTabData, SelectTabEvent } from '@fluentui/react-components'
+import type { SelectTabData, SelectTabEvent, TabValue } from '@fluentui/react-components'
 import {
   Body1,
   Button,
@@ -8,7 +8,6 @@ import {
   Input,
   Tab,
   TabList,
-  TabValue,
   Title1,
   Title3,
   makeStyles,
@@ -171,7 +170,7 @@ export const HomePage = () => {
     [navigate],
   )
 
-  const handleSearchChange = useCallback((_, data: { value: string }) => {
+  const handleSearchChange = useCallback((_: unknown, data: { value: string }) => {
     setSearchQuery(data.value)
     setActiveTab('tasks')
   }, [])
