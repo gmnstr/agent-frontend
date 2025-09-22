@@ -42,7 +42,9 @@ export const AppShell = ({
       <LeftRail />
       <div className={styles.main}>
         <TopBar>{toolbarContent}</TopBar>
-        <div className={styles.content}>{children}</div>
+        <main className={styles.content} role="main" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   )
