@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**For comprehensive AI agent guidance, strictly follow the rules and patterns in ./AGENTS.md**
+
 ## Development Commands
 
 ### Server Management (Recommended)

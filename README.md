@@ -153,6 +153,7 @@ agent-frontend/
 │   └── README.md           # Script documentation
 ├── package.json            # Root package (screenshot utility)
 ├── screenshot.js           # Automated screenshot tool
+├── AGENTS.md               # AI agent development guidelines
 ├── CLAUDE.md               # Claude Code development guidance
 └── README.md              # This file
 ```
@@ -267,6 +268,19 @@ Comprehensive documentation is available in the `docs/` directory:
 - **[⚙️ Development Setup](./docs/development/setup.md)** - Environment setup and workflow
 - **[🚀 Deployment Guide](./docs/deployment/README.md)** - Production deployment
 
+## 🤖 AI Agent Development
+
+This project includes comprehensive guidance for AI coding agents:
+
+**[AGENTS.md](./AGENTS.md)** - Complete AI agent guidelines including:
+- 🎯 Project-specific code patterns and conventions
+- 🔧 Development environment setup and workflows
+- 📝 Component development patterns with TypeScript
+- 🧪 Testing strategies and coverage goals
+- 🚀 Performance and security best practices
+
+The AGENTS.md follows the emerging open standard for AI agent guidance, helping AI tools understand project context and generate better code aligned with established patterns.
+
 ## 🤝 Contributing
 
 1. **Fork the repository**
@@ -285,6 +299,7 @@ Comprehensive documentation is available in the `docs/` directory:
 - Write comprehensive tests for new features
 - Maintain consistent code style with ESLint
 - Update documentation for significant changes
+- **AI Developers**: Review [AGENTS.md](./AGENTS.md) for project-specific patterns
 
 ## 📄 License
 
