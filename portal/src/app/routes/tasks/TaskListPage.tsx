@@ -8,6 +8,8 @@ import type { RootOutletContext } from '../RootLayout'
 import { useHotkey } from '../../../hooks/useHotkey'
 import { defaultSortState, filterTasks, sortTasks } from './taskListUtils'
 import type { TaskListSortState } from './taskListUtils'
+import { trackEvent } from '../../../lib/telemetry'
+import type { Task } from '../../../types/task'
 
 export const TaskListPage = () => {
   const { setToolbar } = useOutletContext<RootOutletContext>()
@@ -63,12 +65,20 @@ export const TaskListPage = () => {
     }
   })
 
+  const handleOpenTask = useCallback(
+    (task: Task) => {
+      trackEvent({ type: 'task_opened', taskId: task.id })
+      navigate(`/tasks/${task.id}`)
+    },
+    [navigate],
+  )
+
   return (
     <TaskList
       tasks={filteredTasks}
       sortState={sortState}
       onSortChange={setSortState}
-      onOpenTask={(task) => navigate(`/tasks/${task.id}`)}
+      onOpenTask={handleOpenTask}
       isLoading={isLoading}
       isError={isError}
     />

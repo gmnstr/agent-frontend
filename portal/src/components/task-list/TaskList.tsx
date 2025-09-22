@@ -22,6 +22,7 @@ import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
 import { formatRelativeTime } from '../../lib/formatRelativeTime'
 import type { Task } from '../../types/task'
 import { TaskStatusPill } from './TaskStatusPill'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 
 const shouldVirtualize =
   typeof window !== 'undefined' && !window.navigator.userAgent.toLowerCase().includes('jsdom')
@@ -46,6 +47,17 @@ const useStyles = makeStyles({
   grid: {
     height: '100%',
   },
+  liveRegion: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    margin: '-1px',
+    padding: 0,
+    border: 0,
+    whiteSpace: 'nowrap',
+    clipPath: 'inset(50%)',
+    overflow: 'hidden',
+  },
   loadingState: {
     position: 'absolute',
     inset: 0,
@@ -58,6 +70,33 @@ const useStyles = makeStyles({
     textAlign: 'center',
     ...shorthands.padding('4rem', '1rem'),
     color: tokens.colorNeutralForeground3,
+  },
+  changeCell: {
+    display: 'inline-flex',
+    alignItems: 'baseline',
+    gap: '0.25rem',
+  },
+  changeVisual: {
+    display: 'inline-flex',
+    alignItems: 'baseline',
+    gap: '0.25rem',
+  },
+  additions: {
+    color: tokens.colorPaletteLightGreenForeground1,
+  },
+  deletions: {
+    color: tokens.colorPaletteRedForeground1,
+  },
+  srOnly: {
+    position: 'absolute',
+    width: '1px',
+    height: '1px',
+    margin: '-1px',
+    padding: 0,
+    border: 0,
+    whiteSpace: 'nowrap',
+    clipPath: 'inset(50%)',
+    overflow: 'hidden',
   },
 })
 
@@ -114,6 +153,23 @@ export const TaskList = ({
   isError,
 }: TaskListProps) => {
   const styles = useStyles()
+  const prefersReducedMotion = usePrefersReducedMotion()
+
+  const totals = useMemo(() => {
+    let additions = 0
+    let deletions = 0
+
+    for (const task of tasks) {
+      additions += task.additions
+      deletions += task.deletions
+    }
+
+    return { additions, deletions }
+  }, [tasks])
+
+  const liveRegionMessage = tasks.length
+    ? `Showing ${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'} with +${totals.additions} additions and −${totals.deletions} deletions.`
+    : 'No tasks to display.'
 
   const columns = useMemo(
     () => [
@@ -149,14 +205,17 @@ export const TaskList = ({
         compare: (a, b) => a.additions - a.deletions - (b.additions - b.deletions),
         renderHeaderCell: () => '+/-',
         renderCell: (item) => (
-          <Text aria-label={`+${item.additions} additions, -${item.deletions} deletions`}>
-            <Text weight="semibold" as="span" style={{ color: tokens.colorPaletteLightGreenForeground1 }}>
-              +{item.additions}
-            </Text>{' '}
-            <Text weight="semibold" as="span" style={{ color: tokens.colorPaletteRedForeground1 }}>
-              −{item.deletions}
-            </Text>
-          </Text>
+          <span className={styles.changeCell}>
+            <span aria-hidden="true" className={styles.changeVisual}>
+              <Text weight="semibold" as="span" className={styles.additions}>
+                +{item.additions}
+              </Text>
+              <Text weight="semibold" as="span" className={styles.deletions}>
+                −{item.deletions}
+              </Text>
+            </span>
+            <span className={styles.srOnly}>{`+${item.additions} additions, -${item.deletions} deletions`}</span>
+          </span>
         ),
       }),
       createTableColumn<Task>({
@@ -166,12 +225,20 @@ export const TaskList = ({
         renderCell: (item) => <Text>{formatRelativeTime(item.createdAt)}</Text>,
       }),
     ],
-    [],
+    [styles],
   )
 
   return (
-    <section className={styles.container} aria-label="Tasks list">
+    <section className={styles.container} aria-label="Tasks list" role="region">
       <div className={styles.gridWrapper}>
+        <div
+          className={styles.liveRegion}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {liveRegionMessage}
+        </div>
         <DataGrid
           className={styles.grid}
           items={tasks}
@@ -239,8 +306,12 @@ export const TaskList = ({
           )}
         </DataGrid>
         {isLoading && (
-          <div className={styles.loadingState}>
-            <Spinner label="Loading tasks" />
+          <div className={styles.loadingState} role="status" aria-live="polite" aria-busy="true">
+            {prefersReducedMotion ? (
+              <Text weight="semibold">Loading tasks…</Text>
+            ) : (
+              <Spinner label="Loading tasks" />
+            )}
           </div>
         )}
         {!isLoading && tasks.length === 0 && (

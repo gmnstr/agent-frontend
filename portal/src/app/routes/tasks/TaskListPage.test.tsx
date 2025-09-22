@@ -9,6 +9,9 @@ import { useHotkey } from '../../../hooks/useHotkey'
 import type { Task } from '../../../types/task'
 import type { TaskListSortState } from './taskListUtils'
 import type { ReactNode } from 'react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { TaskDetailPlaceholder } from './TaskDetailPlaceholder'
+import * as telemetry from '../../../lib/telemetry'
 
 const sampleTasks: Task[] = [
   {
@@ -87,6 +90,33 @@ describe('TaskList interactions', () => {
 
     expect(handleOpen).toHaveBeenCalledWith(sampleTasks[0])
   })
+
+  it('announces total change counts via live region', () => {
+    const sortState: TaskListSortState = { sortColumn: 'createdAt', sortDirection: 'descending' }
+
+    renderWithinTheme(
+      <TaskList
+        tasks={sampleTasks}
+        sortState={sortState}
+        onSortChange={() => undefined}
+        onOpenTask={() => undefined}
+        isLoading={false}
+      />,
+    )
+
+    const liveRegion = screen
+      .getAllByRole('status', { hidden: true })
+      .find((element) => element.textContent?.includes('Showing 2 tasks with +280 additions'))
+
+    if (!liveRegion) {
+      throw new Error('Live region not found')
+    }
+
+    expect(liveRegion).toHaveAttribute('aria-live', 'polite')
+
+    const srTextNodes = screen.getAllByText('+200 additions, -40 deletions')
+    expect(srTextNodes.length).toBeGreaterThan(0)
+  })
 })
 
 describe('TaskListToolbar', () => {
@@ -126,5 +156,36 @@ describe('useHotkey', () => {
     fireEvent.keyDown(window, { key: '/', code: 'Slash' })
 
     expect(handler).toHaveBeenCalled()
+  })
+})
+
+describe('TaskDetailPlaceholder instrumentation', () => {
+  it('tracks tab changes and PR clicks', async () => {
+    const telemetrySpy = vi.spyOn(telemetry, 'trackEvent')
+    const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+
+    renderWithinTheme(
+      <MemoryRouter initialEntries={['/tasks/task-123']}>
+        <Routes>
+          <Route path="/tasks/:taskId" element={<TaskDetailPlaceholder />} />
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    const logsTab = await screen.findByRole('tab', { name: 'Logs' })
+    await userEvent.click(logsTab)
+
+    const viewPrButton = screen.getByRole('button', { name: /view pull request/i })
+    await userEvent.click(viewPrButton)
+
+    expect(telemetrySpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'tab_changed', tab: 'logs', taskId: 'task-123' }),
+    )
+    expect(telemetrySpy).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'pr_clicked', taskId: 'task-123' }),
+    )
+
+    telemetrySpy.mockRestore()
+    consoleSpy.mockRestore()
   })
 })

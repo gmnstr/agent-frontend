@@ -21,9 +21,18 @@ const statusColor: Record<TaskStatus, BadgeColor> = {
 }
 
 export const TaskStatusPill = ({ status }: { status: TaskStatus }) => {
+  const label = statusLabel[status]
+
   return (
-    <Badge appearance="filled" color={statusColor[status]} size="medium" shape="rounded">
-      {statusLabel[status]}
+    <Badge
+      appearance="filled"
+      color={statusColor[status]}
+      size="medium"
+      shape="rounded"
+      role="status"
+      aria-label={`Task status: ${label}`}
+    >
+      {label}
     </Badge>
   )
 }
