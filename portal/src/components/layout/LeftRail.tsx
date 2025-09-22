@@ -1,4 +1,4 @@
-import { Badge, Text, Tooltip, makeStyles, shorthands, tokens } from '@fluentui/react-components'
+import { Badge, Text, Tooltip, makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components'
 import {
   BookInformation24Regular,
   ClipboardTaskListLtr24Regular,
@@ -223,9 +223,7 @@ export const LeftRail = () => {
               key={item.key}
               to={item.to}
               end={item.end}
-              className={({ isActive }) =>
-                [styles.link, isActive ? styles.linkActive : undefined].filter(Boolean).join(' ')
-              }
+              className={({ isActive }) => mergeClasses(styles.link, isActive && styles.linkActive)}
             >
               {content}
             </NavLink>
