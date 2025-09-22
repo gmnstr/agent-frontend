@@ -16,6 +16,9 @@ import { Archive24Regular, ArrowLeft24Regular, Share24Regular } from '@fluentui/
 import { useParams } from 'react-router-dom'
 import { CodeDiffViewer } from '../../../components/diff/CodeDiffViewer'
 import type { DiffFile } from '../../../components/diff/CodeDiffViewer'
+import { useTaskEventStream } from '../../../hooks/useTaskEventStream'
+import type { TaskEvent } from '../../../hooks/useTaskEventStream'
+import { formatRelativeTime } from '../../../lib/formatRelativeTime'
 import { trackEvent } from '../../../lib/telemetry'
 
 const useStyles = makeStyles({
@@ -99,6 +102,45 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.padding('1.5rem'),
   },
+  logStream: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  logStatus: {
+    color: tokens.colorNeutralForeground3,
+  },
+  logList: {
+    margin: 0,
+    padding: 0,
+    listStyle: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+    maxHeight: '20rem',
+    overflowY: 'auto',
+  },
+  logItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.35rem',
+    ...shorthands.padding('1rem', '1.25rem'),
+    borderRadius: '0.75rem',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    boxShadow: tokens.shadow2,
+  },
+  logHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '0.75rem',
+    flexWrap: 'wrap',
+  },
+  logTime: {
+    fontSize: '0.75rem',
+    color: tokens.colorNeutralForeground3,
+  },
   logsPlaceholder: {
     borderRadius: '0.75rem',
     border: `1px dashed ${tokens.colorNeutralStroke1}`,
@@ -159,11 +201,20 @@ const diffFiles: DiffFile[] = [
   },
 ]
 
+const logLevelMeta: Record<TaskEvent['level'], { label: string; color: 'informative' | 'success' | 'warning' | 'danger' }> = {
+  info: { label: 'Info', color: 'informative' },
+  success: { label: 'Success', color: 'success' },
+  warning: { label: 'Warning', color: 'warning' },
+  error: { label: 'Error', color: 'danger' },
+}
+
 export const TaskDetailPlaceholder = () => {
   const styles = useStyles()
   const { taskId } = useParams()
+  const streamTaskId = taskId ?? 'preview'
   const [activeTab, setActiveTab] = useState<TabValue>('diff')
   const [selectedFile, setSelectedFile] = useState<string | undefined>(diffFiles[0]?.path)
+  const { events: taskEvents, isConnected, latestEvent } = useTaskEventStream(streamTaskId)
   const diffTabId = 'task-detail-tab-diff'
   const logsTabId = 'task-detail-tab-logs'
   const diffPanelId = 'task-detail-panel-diff'
@@ -196,6 +247,19 @@ export const TaskDetailPlaceholder = () => {
     [taskId],
   )
 
+  const logStatusMessage = useMemo(() => {
+    if (!isConnected) {
+      return 'Reconnecting to the agent log stream…'
+    }
+
+    if (!latestEvent) {
+      return 'Live log stream ready.'
+    }
+
+    const { label } = logLevelMeta[latestEvent.level]
+    return `${label}: ${latestEvent.message}`
+  }, [isConnected, latestEvent])
+
   return (
     <div className={styles.page}>
       <section className={styles.header} aria-labelledby="task-detail-heading">
@@ -224,8 +288,8 @@ export const TaskDetailPlaceholder = () => {
               {item}
             </span>
           ))}
-          <Badge appearance="tint" color="informative">
-            Agent run ready
+          <Badge appearance="tint" color={isConnected ? 'success' : 'warning'}>
+            {isConnected ? 'Live updates' : 'Connecting…'}
           </Badge>
         </div>
       </section>
@@ -282,8 +346,29 @@ export const TaskDetailPlaceholder = () => {
           hidden={activeTab !== 'logs'}
           className={styles.tabPanel}
         >
-          <div className={styles.logsPlaceholder}>
-            Live build and agent execution logs will stream here for contextual debugging.
+          <div className={styles.logStream} role="region" aria-label="Live task activity">
+            <div className={styles.logStatus} role="status" aria-live="polite">
+              {logStatusMessage}
+            </div>
+            {taskEvents.length === 0 ? (
+              <div className={styles.logsPlaceholder} role="status" aria-live="polite">
+                Waiting for the agent to publish build and execution events…
+              </div>
+            ) : (
+              <ul className={styles.logList} aria-live="polite">
+                {taskEvents.map((event) => (
+                  <li key={event.id} className={styles.logItem}>
+                    <div className={styles.logHeader}>
+                      <Badge appearance="ghost" color={logLevelMeta[event.level].color}>
+                        {logLevelMeta[event.level].label}
+                      </Badge>
+                      <span className={styles.logTime}>{formatRelativeTime(event.timestamp)}</span>
+                    </div>
+                    <Text size={200}>{event.message}</Text>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </section>

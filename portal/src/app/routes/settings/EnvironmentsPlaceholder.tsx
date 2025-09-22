@@ -1,6 +1,9 @@
 import { Body1, Button, Caption1, Tab, TabList, Title2, makeStyles, shorthands, tokens } from '@fluentui/react-components'
 import type { SelectTabData, SelectTabEvent, TabValue } from '@fluentui/react-components'
+import { useQuery } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
+import { fetchEnvironments } from '../../../api/environments'
+import { EnvironmentTable } from '../../../components/environments/EnvironmentTable'
 
 const useStyles = makeStyles({
   page: {
@@ -44,20 +47,16 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: '1.25rem',
   },
-  tablePlaceholder: {
-    borderRadius: '0.85rem',
-    border: `1px dashed ${tokens.colorNeutralStroke1}`,
-    backgroundColor: tokens.colorNeutralBackground2,
-    ...shorthands.padding('2.5rem'),
-    color: tokens.colorNeutralForeground3,
-    textAlign: 'center',
-    boxShadow: tokens.shadow2,
-  },
 })
 
 export const EnvironmentsPlaceholder = () => {
   const styles = useStyles()
   const [activeTab, setActiveTab] = useState<TabValue>('environments')
+  const { data: environments = [], isLoading } = useQuery({
+    queryKey: ['environments'],
+    queryFn: fetchEnvironments,
+    staleTime: 1000 * 60,
+  })
 
   const handleTabSelect = useCallback(
     (_event: SelectTabEvent, data: SelectTabData) => {
@@ -65,6 +64,10 @@ export const EnvironmentsPlaceholder = () => {
     },
     [],
   )
+
+  const handleCreateEnvironment = useCallback(() => {
+    console.info('Create environment flow coming soon.')
+  }, [])
 
   return (
     <div className={styles.page}>
@@ -82,7 +85,7 @@ export const EnvironmentsPlaceholder = () => {
             <Tab value="data">Data controls</Tab>
             <Tab value="reviews">Code review</Tab>
           </TabList>
-          <Button appearance="primary" disabled>
+          <Button appearance="primary" onClick={handleCreateEnvironment}>
             Create environment
           </Button>
         </div>
@@ -90,12 +93,10 @@ export const EnvironmentsPlaceholder = () => {
           {activeTab === 'environments' ? (
             <>
               <Body1>
-                We&apos;re prioritizing the Codex task board this sprint. Environment provisioning, audit logs, and access controls
-                will land in Phase 2.
+                Review every workspace the Codex agent can deploy to, track live health, and confirm ownership before
+                launching new automation.
               </Body1>
-              <section className={styles.tablePlaceholder} role="status" aria-live="polite">
-                Environment inventory and access policies will render here once the settings module is unlocked.
-              </section>
+              <EnvironmentTable environments={environments} isLoading={isLoading} />
             </>
           ) : (
             <Body1>

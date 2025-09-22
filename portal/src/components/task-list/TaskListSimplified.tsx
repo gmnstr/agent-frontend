@@ -1,5 +1,5 @@
 import { Skeleton, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components'
-import type { KeyboardEvent, MouseEvent } from 'react'
+import type { KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import { formatRelativeTime } from '../../lib/formatRelativeTime'
 import type { Task } from '../../types/task'
 import { TaskStatusPill } from './TaskStatusPill'
@@ -9,6 +9,7 @@ type TaskListSimplifiedProps = {
   onTaskClick?: (task: Task) => void
   isLoading?: boolean
   emptyStateMessage?: string
+  highlightQuery?: string
 }
 
 const useStyles = makeStyles({
@@ -75,13 +76,54 @@ const useStyles = makeStyles({
     textAlign: 'center',
     color: tokens.colorNeutralForeground3,
   },
+  highlight: {
+    backgroundColor: 'rgba(56, 139, 253, 0.25)',
+    borderRadius: '0.25rem',
+    ...shorthands.padding('0', '0.15rem'),
+  },
 })
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const highlightMatches = (text: string, query: string, className: string): ReactNode => {
+  const normalized = query.trim()
+
+  if (!normalized) {
+    return text
+  }
+
+  const escaped = escapeRegExp(normalized)
+
+  if (!escaped) {
+    return text
+  }
+
+  const regex = new RegExp(`(${escaped})`, 'ig')
+  const segments = text.split(regex)
+
+  if (segments.length <= 1) {
+    return text
+  }
+
+  const normalizedLower = normalized.toLowerCase()
+
+  return segments.map((segment, index) =>
+    segment.toLowerCase() === normalizedLower ? (
+      <span key={`${segment}-${index}`} className={className}>
+        {segment}
+      </span>
+    ) : (
+      <span key={`${segment}-${index}`}>{segment}</span>
+    ),
+  )
+}
 
 export const TaskListSimplified = ({
   tasks,
   onTaskClick,
   isLoading = false,
   emptyStateMessage = 'No tasks yet. Start by describing what you would like to build next.',
+  highlightQuery = '',
 }: TaskListSimplifiedProps) => {
   const styles = useStyles()
 
@@ -121,34 +163,38 @@ export const TaskListSimplified = ({
 
   return (
     <div className={styles.root}>
-      {tasks.map((task) => (
-        <div
-          key={task.id}
-          className={styles.item}
-          onClick={handleClick(task)}
-          onKeyDown={handleKeyDown(task)}
-          role={onTaskClick ? 'button' : undefined}
-          tabIndex={onTaskClick ? 0 : -1}
-        >
-          <div className={styles.header}>
-            <Text weight="semibold" size={400}>
-              {task.title}
-            </Text>
-            <div className={styles.meta} aria-label="Diff statistics">
-              <TaskStatusPill status={task.status} />
-              <span>
-                <span className={styles.additions}>+{task.additions}</span>
-                {' '}
-                <span className={styles.deletions}>-{task.deletions}</span>
-              </span>
+      {tasks.map((task) => {
+        const description = `${formatRelativeTime(task.createdAt)} • ${task.repository}`
+        const extendedDescription = task.summary ? `${description} • ${task.summary}` : description
+
+        return (
+          <div
+            key={task.id}
+            className={styles.item}
+            onClick={handleClick(task)}
+            onKeyDown={handleKeyDown(task)}
+            role={onTaskClick ? 'button' : undefined}
+            tabIndex={onTaskClick ? 0 : -1}
+          >
+            <div className={styles.header}>
+              <Text weight="semibold" size={400}>
+                {highlightMatches(task.title, highlightQuery, styles.highlight)}
+              </Text>
+              <div className={styles.meta} aria-label="Diff statistics">
+                <TaskStatusPill status={task.status} />
+                <span>
+                  <span className={styles.additions}>+{task.additions}</span>
+                  {' '}
+                  <span className={styles.deletions}>-{task.deletions}</span>
+                </span>
+              </div>
             </div>
+            <Text size={200} className={styles.description}>
+              {highlightMatches(extendedDescription, highlightQuery, styles.highlight)}
+            </Text>
           </div>
-          <Text size={200} className={styles.description}>
-            {formatRelativeTime(task.createdAt)} • {task.repository}
-            {task.summary ? ` • ${task.summary}` : ''}
-          </Text>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
