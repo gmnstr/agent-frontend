@@ -1,7 +1,33 @@
 import type { ReactNode } from 'react'
-import { Avatar, Badge, Button, makeStyles, shorthands, tokens } from '@fluentui/react-components'
-import { Add12Filled, LineHorizontal3Regular } from '@fluentui/react-icons'
+import {
+  Avatar,
+  Badge,
+  Button,
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+  DialogTrigger,
+  makeStyles,
+  shorthands,
+  tokens,
+} from '@fluentui/react-components'
+import { Add12Filled, Dismiss24Regular, LineHorizontal3Regular } from '@fluentui/react-icons'
 import { Link, NavLink } from 'react-router-dom'
+
+type NavigationItem = {
+  key: string
+  label: string
+  to: string
+  end?: boolean
+}
+
+const navItems: NavigationItem[] = [
+  { key: 'overview', label: 'Overview', to: '/', end: true },
+  { key: 'tasks', label: 'Tasks', to: '/tasks' },
+  { key: 'environments', label: 'Environments', to: '/settings/environments' },
+]
 
 const useStyles = makeStyles({
   root: {
@@ -17,6 +43,9 @@ const useStyles = makeStyles({
     minHeight: '4rem',
     boxShadow: tokens.shadow2,
     gap: '2rem',
+    '@media (max-width: 900px)': {
+      ...shorthands.padding('0', '1.25rem'),
+    },
   },
   left: {
     display: 'flex',
@@ -66,23 +95,16 @@ const useStyles = makeStyles({
     letterSpacing: '0.08em',
     color: tokens.colorNeutralForeground3,
   },
-  toolbar: {
+  nav: {
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
-    minWidth: 0,
-    flex: 1,
-    '@media (max-width: 900px)': {
+    gap: '1.5rem',
+    '@media (max-width: 1023px)': {
       display: 'none',
     },
   },
-  right: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.25rem',
-  },
   navLink: {
-    fontSize: '0.875rem',
+    fontSize: '0.95rem',
     color: tokens.colorNeutralForeground2,
     fontWeight: 500,
     textDecoration: 'none',
@@ -101,6 +123,29 @@ const useStyles = makeStyles({
       },
     },
   },
+  navLinkActive: {
+    color: tokens.colorBrandForeground1,
+  },
+  center: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    minWidth: 0,
+    '@media (max-width: 900px)': {
+      display: 'none',
+    },
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+  },
+  right: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1.25rem',
+  },
   avatarWrapper: {
     position: 'relative',
   },
@@ -110,6 +155,27 @@ const useStyles = makeStyles({
     right: '-0.35rem',
     boxShadow: tokens.shadow4,
   },
+  mobileNav: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  mobileNavLink: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: tokens.colorNeutralForeground1,
+    textDecoration: 'none',
+    selectors: {
+      '&[aria-current="page"]': {
+        color: tokens.colorBrandForeground1,
+      },
+    },
+  },
+  mobileDialogContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
 })
 
 export const TopBar = ({ children }: { children?: ReactNode }) => {
@@ -118,13 +184,40 @@ export const TopBar = ({ children }: { children?: ReactNode }) => {
   return (
     <header className={styles.root}>
       <div className={styles.left}>
-        <Button
-          className={styles.menuButton}
-          appearance="transparent"
-          icon={<LineHorizontal3Regular />}
-          aria-label="Open navigation"
-          onClick={() => console.info('Navigation drawer coming soon')}
-        />
+        <Dialog modalType="non-modal">
+          <DialogTrigger disableButtonEnhancement>
+            <Button
+              className={styles.menuButton}
+              appearance="transparent"
+              icon={<LineHorizontal3Regular />}
+              aria-label="Open navigation"
+            />
+          </DialogTrigger>
+          <DialogSurface aria-label="Navigation">
+            <DialogBody>
+              <DialogTitle
+                action={
+                  <DialogTrigger action="close" disableButtonEnhancement>
+                    <Button appearance="transparent" icon={<Dismiss24Regular />} aria-label="Close" />
+                  </DialogTrigger>
+                }
+              >
+                Menu
+              </DialogTitle>
+              <DialogContent className={styles.mobileDialogContent}>
+                <nav className={styles.mobileNav} aria-label="Primary navigation">
+                  {navItems.map((item) => (
+                    <DialogTrigger key={item.key} action="close" disableButtonEnhancement>
+                      <NavLink to={item.to} end={item.end} className={styles.mobileNavLink}>
+                        {item.label}
+                      </NavLink>
+                    </DialogTrigger>
+                  ))}
+                </nav>
+              </DialogContent>
+            </DialogBody>
+          </DialogSurface>
+        </Dialog>
         <Link to="/" className={styles.brandLink} aria-label="Codex portal home">
           <span className={styles.brandIcon} aria-hidden="true">
             {'{ }'}
@@ -134,14 +227,27 @@ export const TopBar = ({ children }: { children?: ReactNode }) => {
             <span className={styles.brandSubtitle}>AI coding portal</span>
           </span>
         </Link>
+        <nav className={styles.nav} aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.key}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                [styles.navLink, isActive ? styles.navLinkActive : undefined].filter(Boolean).join(' ')
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+      <div className={styles.center}>
         <div className={styles.toolbar} role="toolbar" aria-label="Page actions">
           {children}
         </div>
       </div>
       <div className={styles.right}>
-        <NavLink to="/settings/environments" className={styles.navLink}>
-          Settings
-        </NavLink>
         <a className={styles.navLink} href="#" onClick={(event) => event.preventDefault()} aria-disabled="true">
           Docs
         </a>
