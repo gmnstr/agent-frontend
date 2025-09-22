@@ -1,8 +1,21 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Badge, Button, Tab, TabList, Text, Textarea, Title2, makeStyles, shorthands, tokens } from '@fluentui/react-components'
+import {
+  Badge,
+  Button,
+  Tab,
+  TabList,
+  Text,
+  Textarea,
+  Title2,
+  makeStyles,
+  shorthands,
+  tokens,
+} from '@fluentui/react-components'
 import type { SelectTabData, SelectTabEvent, TabValue } from '@fluentui/react-components'
 import { Archive24Regular, ArrowLeft24Regular, Share24Regular } from '@fluentui/react-icons'
 import { useParams } from 'react-router-dom'
+import { CodeDiffViewer } from '../../../components/diff/CodeDiffViewer'
+import type { DiffFile } from '../../../components/diff/CodeDiffViewer'
 import { trackEvent } from '../../../lib/telemetry'
 
 const useStyles = makeStyles({
@@ -10,129 +23,108 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '1.5rem',
+    paddingBottom: '3rem',
   },
   header: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
-    borderRadius: '0.85rem',
+    borderRadius: '0.9rem',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground2,
-    ...shorthands.padding('1.5rem', '2rem'),
-    boxShadow: tokens.shadow2,
+    ...shorthands.padding('1.75rem', '2rem'),
+    boxShadow: tokens.shadow4,
   },
-  headerRow: {
+  headerTop: {
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '1rem',
   },
-  breadcrumb: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    color: tokens.colorNeutralForeground3,
-    fontSize: '0.875rem',
-  },
-  headerActions: {
-    display: 'flex',
-    gap: '0.75rem',
-    flexWrap: 'wrap',
-  },
-  metaRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '1rem',
-    alignItems: 'center',
-    color: tokens.colorNeutralForeground3,
-    fontSize: '0.875rem',
-  },
-  layout: {
-    display: 'grid',
-    gridTemplateColumns: 'minmax(260px, 320px) minmax(0, 1fr)',
-    gap: '1.5rem',
-  },
-  sidebar: {
+  headerTitle: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1.25rem',
+    gap: '0.75rem',
+  },
+  actions: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.75rem',
+  },
+  meta: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.75rem',
+    alignItems: 'center',
+    color: tokens.colorNeutralForeground3,
+    fontSize: '0.9rem',
+  },
+  infoGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(18rem, 1fr))',
+    gap: '1rem',
+  },
+  infoCard: {
     borderRadius: '0.85rem',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground2,
     ...shorthands.padding('1.5rem'),
     boxShadow: tokens.shadow2,
-  },
-  sidebarSection: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.75rem',
   },
-  sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontWeight: 600,
-    color: tokens.colorNeutralForeground1,
-  },
-  list: {
+  infoList: {
     margin: 0,
     paddingLeft: '1.25rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5rem',
-    color: tokens.colorNeutralForeground2,
+    color: tokens.colorNeutralForeground3,
   },
-  fileItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: '0.75rem',
-    fontFamily: tokens.fontFamilyMonospace,
-    fontSize: '0.875rem',
-  },
-  mainPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-    borderRadius: '0.85rem',
+  tabContainer: {
+    borderRadius: '0.9rem',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.padding('1.5rem'),
     boxShadow: tokens.shadow4,
-  },
-  tabs: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
-    ...shorthands.padding('1.25rem', '1.5rem'),
+    gap: '1.25rem',
   },
   tabPanel: {
-    flex: 1,
-    minHeight: '22rem',
-    ...shorthands.padding('1.5rem'),
+    borderRadius: '0.75rem',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.padding('1.5rem'),
+  },
+  logsPlaceholder: {
     borderRadius: '0.75rem',
     border: `1px dashed ${tokens.colorNeutralStroke1}`,
-    display: 'grid',
-    placeItems: 'center',
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.padding('2.5rem', '1.5rem'),
     textAlign: 'center',
     color: tokens.colorNeutralForeground3,
   },
-  bottomBar: {
-    borderRadius: '0.85rem',
+  composer: {
+    borderRadius: '0.9rem',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: tokens.colorNeutralBackground2,
-    ...shorthands.padding('1rem', '1.5rem'),
+    ...shorthands.padding('1.25rem', '1.5rem'),
     display: 'flex',
     gap: '1rem',
     alignItems: 'flex-start',
     boxShadow: tokens.shadow2,
+    flexWrap: 'wrap',
   },
-  input: {
+  composerInput: {
     flex: 1,
+    minWidth: '16rem',
   },
-  bottomActions: {
+  composerActions: {
     display: 'flex',
-    gap: '0.5rem',
+    gap: '0.75rem',
     flexWrap: 'wrap',
   },
 })
@@ -143,16 +135,35 @@ const summaryBullets = [
   'Each section is fully collapsible for focused reviews.',
 ]
 
-const filesMock = [
-  { path: 'src/components/DiffViewer.tsx', additions: 124, deletions: 33 },
-  { path: 'src/styles/theme/tokens.ts', additions: 42, deletions: 12 },
-  { path: 'package.json', additions: 5, deletions: 1 },
+const diffFiles: DiffFile[] = [
+  {
+    path: 'src/components/MainInputComponent.tsx',
+    additions: 124,
+    deletions: 33,
+    content: `diff --git a/src/components/MainInputComponent.tsx b/src/components/MainInputComponent.tsx
++// Input redesign coming soon\n+export const MainInputComponent = () => null`,
+  },
+  {
+    path: 'src/styles/theme/tokens.ts',
+    additions: 42,
+    deletions: 12,
+    content: `diff --git a/src/styles/theme/tokens.ts b/src/styles/theme/tokens.ts
++// Theme updates placeholder`,
+  },
+  {
+    path: 'package.json',
+    additions: 5,
+    deletions: 1,
+    content: `diff --git a/package.json b/package.json
++  "codex": "0.1.0"`,
+  },
 ]
 
 export const TaskDetailPlaceholder = () => {
   const styles = useStyles()
   const { taskId } = useParams()
   const [activeTab, setActiveTab] = useState<TabValue>('diff')
+  const [selectedFile, setSelectedFile] = useState<string | undefined>(diffFiles[0]?.path)
   const diffTabId = 'task-detail-tab-diff'
   const logsTabId = 'task-detail-tab-logs'
   const diffPanelId = 'task-detail-panel-diff'
@@ -171,6 +182,10 @@ export const TaskDetailPlaceholder = () => {
     console.info('View PR clicked (placeholder).')
   }, [taskId])
 
+  const handleFileSelect = useCallback((filePath: string) => {
+    setSelectedFile(filePath)
+  }, [])
+
   const headerMeta = useMemo(
     () => [
       `Task ID: ${taskId ?? 'unknown'}`,
@@ -184,14 +199,14 @@ export const TaskDetailPlaceholder = () => {
   return (
     <div className={styles.page}>
       <section className={styles.header} aria-labelledby="task-detail-heading">
-        <div className={styles.headerRow}>
-          <div>
+        <div className={styles.headerTop}>
+          <div className={styles.headerTitle}>
             <Button appearance="transparent" icon={<ArrowLeft24Regular />} aria-label="Back to tasks" disabled>
               Back
             </Button>
             <Title2 id="task-detail-heading">Task detail experience coming soon</Title2>
           </div>
-          <div className={styles.headerActions}>
+          <div className={styles.actions}>
             <Button appearance="secondary" icon={<Share24Regular />} disabled>
               Share
             </Button>
@@ -203,7 +218,7 @@ export const TaskDetailPlaceholder = () => {
             </Button>
           </div>
         </div>
-        <div className={styles.metaRow} role="list">
+        <div className={styles.meta} role="list">
           {headerMeta.map((item) => (
             <span key={item} role="listitem">
               {item}
@@ -215,86 +230,73 @@ export const TaskDetailPlaceholder = () => {
         </div>
       </section>
 
-      <div className={styles.layout}>
-        <aside className={styles.sidebar} aria-label="Task sidebar">
-          <div className={styles.sidebarSection}>
-            <div className={styles.sectionHeader}>Summary</div>
-            <ul className={styles.list}>
-              {summaryBullets.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div className={styles.sidebarSection}>
-            <div className={styles.sectionHeader}>Testing</div>
-            <Text weight="semibold" style={{ color: '#3FB950' }}>
-              All suites passing
-            </Text>
-            <Text size={200}>
-              Automated checks and manual verification notes will appear here to guide your review.
-            </Text>
-          </div>
-          <div className={styles.sidebarSection}>
-            <div className={styles.sectionHeader}>Files (preview)</div>
-            <div className={styles.list}>
-              {filesMock.map((file) => (
-                <div key={file.path} className={styles.fileItem}>
-                  <span>{file.path}</span>
-                  <span>
-                    +{file.additions} / -{file.deletions}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
+      <section className={styles.infoGrid} aria-label="Task signals">
+        <div className={styles.infoCard}>
+          <Text weight="semibold">Summary</Text>
+          <ul className={styles.infoList}>
+            {summaryBullets.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+        <div className={styles.infoCard}>
+          <Text weight="semibold" style={{ color: '#3FB950' }}>
+            All suites passing
+          </Text>
+          <Text size={200}>
+            Automated checks and manual verification notes will appear here to guide your review.
+          </Text>
+          <Badge appearance="ghost" color="success">
+            CI signal synced
+          </Badge>
+        </div>
+      </section>
 
-        <section className={styles.mainPanel} aria-label="Task content">
-          <div className={styles.tabs}>
-            <TabList
-              selectedValue={activeTab}
-              onTabSelect={handleTabSelect}
-              aria-label="Task detail tabs"
-              aria-labelledby="task-detail-heading"
-            >
-              <Tab value="diff" id={diffTabId} aria-controls={diffPanelId}>
-                Diff
-              </Tab>
-              <Tab value="logs" id={logsTabId} aria-controls={logsPanelId}>
-                Logs
-              </Tab>
-            </TabList>
-            <div
-              role="tabpanel"
-              id={diffPanelId}
-              aria-labelledby={diffTabId}
-              hidden={activeTab !== 'diff'}
-              className={styles.tabPanel}
-            >
-              Diff review tools, minimap navigation, and annotations will land in Phase 3.
-            </div>
-            <div
-              role="tabpanel"
-              id={logsPanelId}
-              aria-labelledby={logsTabId}
-              hidden={activeTab !== 'logs'}
-              className={styles.tabPanel}
-            >
-              Live build and agent execution logs will stream here for contextual debugging.
-            </div>
+      <section className={styles.tabContainer} aria-label="Task review workspace">
+        <TabList
+          selectedValue={activeTab}
+          onTabSelect={handleTabSelect}
+          aria-label="Task detail tabs"
+          aria-labelledby="task-detail-heading"
+        >
+          <Tab value="diff" id={diffTabId} aria-controls={diffPanelId}>
+            Diff
+          </Tab>
+          <Tab value="logs" id={logsTabId} aria-controls={logsPanelId}>
+            Logs
+          </Tab>
+        </TabList>
+        <div
+          role="tabpanel"
+          id={diffPanelId}
+          aria-labelledby={diffTabId}
+          hidden={activeTab !== 'diff'}
+          className={styles.tabPanel}
+        >
+          <CodeDiffViewer files={diffFiles} selectedFile={selectedFile} onFileSelect={handleFileSelect} />
+        </div>
+        <div
+          role="tabpanel"
+          id={logsPanelId}
+          aria-labelledby={logsTabId}
+          hidden={activeTab !== 'logs'}
+          className={styles.tabPanel}
+        >
+          <div className={styles.logsPlaceholder}>
+            Live build and agent execution logs will stream here for contextual debugging.
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
-      <footer className={styles.bottomBar} aria-label="Agent composer">
+      <footer className={styles.composer} aria-label="Agent composer">
         <Textarea
-          className={styles.input}
+          className={styles.composerInput}
           placeholder="Ask the agent for clarification or request new code updates..."
           disabled
           resize="vertical"
           aria-disabled="true"
         />
-        <div className={styles.bottomActions}>
+        <div className={styles.composerActions}>
           <Button appearance="secondary" disabled>
             Ask
           </Button>
