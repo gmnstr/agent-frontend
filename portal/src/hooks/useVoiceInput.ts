@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import '../types/speech.d.ts'
 
 type VoiceInputOptions = {
   lang?: string
@@ -16,7 +15,7 @@ type VoiceInputState = {
 }
 
 export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): VoiceInputState => {
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
   const [isSupported, setIsSupported] = useState(false)
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -29,7 +28,8 @@ export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): Voice
     }
 
     initializedRef.current = true
-    const SpeechRecognitionCtor = window.SpeechRecognition ?? window.webkitSpeechRecognition
+    const SpeechRecognitionCtor: SpeechRecognitionConstructor | undefined =
+      window.SpeechRecognition ?? window.webkitSpeechRecognition
 
     if (!SpeechRecognitionCtor) {
       setIsSupported(false)
@@ -47,13 +47,17 @@ export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): Voice
       setTranscript('')
     }
 
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       let aggregated = ''
 
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const result = event.results[index]
-        const alternative = result[0]
-        if (alternative) {
+        const result = event.results.item(index)
+        if (!result) {
+          continue
+        }
+
+        const alternative = result.item(0)
+        if (alternative?.transcript) {
           aggregated += alternative.transcript
         }
       }
@@ -61,7 +65,7 @@ export const useVoiceInput = ({ lang = 'en-US' }: VoiceInputOptions = {}): Voice
       setTranscript(aggregated.trim())
     }
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       setError(event.message || event.error)
       setIsRecording(false)
     }
