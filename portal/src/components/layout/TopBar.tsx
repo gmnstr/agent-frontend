@@ -16,6 +16,7 @@ import {
 } from '@fluentui/react-components'
 import { Add12Filled, Dismiss24Regular, LineHorizontal3Regular } from '@fluentui/react-icons'
 import { Link, NavLink } from 'react-router-dom'
+import { GlobalSearch } from '../search/GlobalSearch'
 
 type NavigationItem = {
   key: string
@@ -110,17 +111,15 @@ const useStyles = makeStyles({
     textDecoration: 'none',
     transitionProperty: 'color',
     transitionDuration: '120ms',
-    selectors: {
-      '&:hover': {
-        color: tokens.colorBrandForeground1,
-      },
-      '&:focus-visible': {
-        outline: `2px solid ${tokens.colorBrandBackground}`,
-        outlineOffset: '3px',
-      },
-      '&[aria-current="page"]': {
-        color: tokens.colorBrandForeground1,
-      },
+    '&:hover': {
+      color: tokens.colorBrandForeground1,
+    },
+    '&:focus-visible': {
+      outline: `2px solid ${tokens.colorBrandBackground}`,
+      outlineOffset: '3px',
+    },
+    '&[aria-current="page"]': {
+      color: tokens.colorBrandForeground1,
     },
   },
   navLinkActive: {
@@ -164,10 +163,8 @@ const useStyles = makeStyles({
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
     textDecoration: 'none',
-    selectors: {
-      '&[aria-current="page"]': {
-        color: tokens.colorBrandForeground1,
-      },
+    '&[aria-current="page"]': {
+      color: tokens.colorBrandForeground1,
     },
   },
   mobileDialogContent: {
@@ -245,6 +242,7 @@ export const TopBar = ({ children }: { children?: ReactNode }) => {
         </div>
       </div>
       <div className={styles.right}>
+        <GlobalSearch />
         <a className={styles.navLink} href="#" onClick={(event) => event.preventDefault()} aria-disabled="true">
           Docs
         </a>
