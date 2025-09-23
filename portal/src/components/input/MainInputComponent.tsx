@@ -1,4 +1,12 @@
-import { Button, Textarea, Tooltip, makeStyles, shorthands, tokens } from '@fluentui/react-components'
+import {
+  Button,
+  Textarea,
+  Tooltip,
+  makeStyles,
+  mergeClasses,
+  shorthands,
+  tokens,
+} from '@fluentui/react-components'
 import { Attach24Regular, Mic24Regular } from '@fluentui/react-icons'
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
@@ -201,13 +209,11 @@ export const MainInputComponent = ({
     return ''
   }, [hasVoiceInput, voice.isRecording, voice.isSupported, voiceNotice, voiceAttempted])
 
-  const voiceButtonClassName = [
+  const voiceButtonClassName = mergeClasses(
     styles.iconButton,
-    voice.isRecording ? styles.voiceButtonActive : undefined,
-    prefersReducedMotion ? styles.voiceButtonReducedMotion : undefined,
-  ]
-    .filter(Boolean)
-    .join(' ')
+    voice.isRecording && styles.voiceButtonActive,
+    prefersReducedMotion && styles.voiceButtonReducedMotion,
+  )
 
   const voiceButtonLabel = voice.isRecording ? 'Stop voice input' : 'Start voice input'
 

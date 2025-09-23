@@ -1,4 +1,4 @@
-import { Button, makeStyles, shorthands, tokens } from '@fluentui/react-components'
+import { Button, makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components'
 import { DocumentText24Regular } from '@fluentui/react-icons'
 
 export type DiffFile = {
@@ -97,9 +97,7 @@ export const CodeDiffViewer = ({ files, selectedFile, onFileSelect }: CodeDiffVi
         {files.map((file, index) => {
           const isActive = index === activeIndex
           const tabId = `diff-viewer-tab-${index}`
-          const className = [styles.fileButton, isActive ? styles.activeFile : undefined]
-            .filter(Boolean)
-            .join(' ')
+          const className = mergeClasses(styles.fileButton, isActive && styles.activeFile)
 
           return (
             <Button

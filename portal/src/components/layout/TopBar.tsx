@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
   makeStyles,
+  mergeClasses,
   shorthands,
   tokens,
 } from '@fluentui/react-components'
@@ -231,9 +232,7 @@ export const TopBar = ({ children }: { children?: ReactNode }) => {
               key={item.key}
               to={item.to}
               end={item.end}
-              className={({ isActive }) =>
-                [styles.navLink, isActive ? styles.navLinkActive : undefined].filter(Boolean).join(' ')
-              }
+              className={({ isActive }) => mergeClasses(styles.navLink, isActive && styles.navLinkActive)}
             >
               {item.label}
             </NavLink>
